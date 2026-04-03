@@ -48,9 +48,10 @@
   <!-- TopNavBar -->
   <header
     class="bg-white flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto border-b border-[#e2e8f0]">
-    <div class="text-2xl font-bold tracking-tight text-primary font-headline">
+    <a href="{{ route('home') }}"
+      class="text-2xl font-bold tracking-tighter text-teal-700 hover:text-blue-600 transition-all duration-300 cursor-pointer">
       AquaStream
-    </div>
+    </a>
     <a href="{{ route('login.view') }}"
       class="btn btn-primary bg-[#00796B] text-white font-medium px-6 py-2 rounded-full hover:bg-[#00695C] transition-all active:scale-95 shadow-sm select-none">
       登入

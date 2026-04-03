@@ -107,7 +107,11 @@
   <!-- Top Navigation Bar -->
   <header class="bg-white border-b border-slate-100 sticky top-0 z-50">
     <div class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
-      <div class="text-2xl font-bold tracking-tight text-teal-700">AquaStream</div>
+      <!-- <div class="text-2xl font-bold tracking-tight text-teal-700">AquaStream</div> -->
+      <a href="{{ route('home') }}"
+        class="text-2xl font-bold tracking-tighter text-teal-700 hover:text-blue-600 transition-all duration-300 cursor-pointer">
+        AquaStream
+      </a>
       <nav class="hidden md:flex gap-8">
         <!-- <a class="text-teal-700 font-semibold transition-opacity opacity-80" href="#">Login</a> -->
       </nav>

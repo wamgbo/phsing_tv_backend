@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Post extends Model
+class Post extends Authenticatable
 {
+    protected $table = 'posts';
     protected $fillable = ['username', 'password'];
 
     // app/Models/Post.php

@@ -52,10 +52,20 @@
       class="text-2xl font-bold tracking-tighter text-teal-700 hover:text-blue-600 transition-all duration-300 cursor-pointer">
       AquaStream
     </a>
-    <a href="{{ route('login.view') }}"
-      class="btn btn-primary bg-[#00796B] text-white font-medium px-6 py-2 rounded-full hover:bg-[#00695C] transition-all active:scale-95 shadow-sm select-none">
-      登入
-    </a>
+    @if(session('user_id'))
+      <div class="flex items-center gap-4">
+        <span class="text-slate-600">嗨, {{session('user_name')}}</span>
+        <form action {{ route('login.submit') }} method="POST">
+          @csrf
+          <button type="submit" class="text-sm text-red-500 hover:underline">登出</button>
+        </form>
+      </div>
+    @else
+      <a href="{{ route('login.view') }}"
+        class="btn btn-primary bg-[#00796B] text-white font-medium px-6 py-2 rounded-full hover:bg-[#00695C] transition-all active:scale-95 shadow-sm">
+        登入
+      </a>
+    @endif
   </header>
   <!-- Main Content Canvas -->
   <main class="flex-grow flex items-center justify-center p-8">

@@ -144,6 +144,9 @@
               <input
                 class="block w-full pl-10 pr-3 py-3 bg-surface-container-lowest border border-outline-variant/30 rounded-lg focus:ring-2 focus:ring-primary-fixed/20 focus:border-primary transition-all outline-none text-on-surface placeholder:text-outline/60"
                 id="username" name="username" placeholder="Enter your username" type="text" />
+              @error('username')
+                <span class="text-red-500 text-sm">{{ $message }}</span>
+              @enderror
             </div>
           </div>
           <!-- Password Field -->

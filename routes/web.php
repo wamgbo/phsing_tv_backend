@@ -1,25 +1,27 @@
 <?php
 
 use App\Http\Controllers\PostController;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 
+//home page
 Route::match(['get', 'post'], '/', function () {
     return view('pages.home');
 })->name('home');
-// Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/posts', [PostController::class, 'index']);
-// Route::get('/temp', function () {
-//     return view('pages.temp');
-// });
+
+//login & register
+Route::get('/login', [AuthController::class, 'loginView'])->name('login.view');//get登入
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit');//login驗證成功後的動作
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout.submit');
+
+Route::get('/register', function () {
+    return view('pages.register');
+})->name('register.view');
+
+Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
+
+//test page
 route::match(['get', 'post'], '/temp', function () {
     return view('pages.temp');
 });
-Route::get('/login', [PostController::class, 'loginView'])->name('login.view');
-Route::post('/login', [PostController::class, 'login'])->name('login.submit');
-Route::post('/logout', [PostController::class, 'logout'])->name('logout.submit');
-// Route::post('/login', [PostController::class, 'loginSubmit'])->name('login.submit');
-// Route::post('/result', [PostController::class, 'result'])->name('result.view');
-
-
-

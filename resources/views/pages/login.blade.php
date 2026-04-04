@@ -187,7 +187,7 @@
         <!-- Sign Up Option -->
         <p class="text-center text-sm text-on-surface-variant">
           Don't have an account?
-          <a class="text-primary font-bold hover:underline ml-1" href="#">Sign up</a>
+          <a class="text-primary font-bold hover:underline ml-1" href="{{ route('register.view') }}">Sign up</a>
         </p>
       </div>
       <!-- Footer Graphic (Simple for Student Vibe) -->

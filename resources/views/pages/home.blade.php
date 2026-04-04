@@ -55,7 +55,7 @@
     @if(session('user_id'))
       <div class="flex items-center gap-4">
         <span class="text-slate-600">嗨, {{session('user_name')}}</span>
-        <form action {{ route('login.submit') }} method="POST">
+        <form action="{{ route('logout.submit') }}" method="POST">
           @csrf
           <button type="submit" class="text-sm text-red-500 hover:underline">登出</button>
         </form>

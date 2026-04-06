@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:17
+    container_name: phsing_tv_db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: phsing_tv
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:

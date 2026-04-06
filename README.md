@@ -1,3 +1,5 @@
+本專案使用postasql需要自己建立 so~
+用docker 快速啟動
 # docker 使用方法:
 到專案目錄，docker-compose.yaml所在點
 ```

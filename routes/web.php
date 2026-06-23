@@ -60,6 +60,9 @@ Route::post('/api/messages', function (Request $request) {
     $msg->content = $request->content;
     $msg->save();
 
+    // 即時推播給其他人（自己這邊前端直接顯示，不用等廣播）
+    broadcast(new \App\Events\MessageSent($msg))->toOthers();
+
     return response()->json(['status' => 'success']);
 })->name('messages.store');
 Route::get('/api/online-count', function () {

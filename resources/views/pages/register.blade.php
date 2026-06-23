@@ -184,7 +184,7 @@
         <!-- Login Option -->
         <p class="text-center text-sm font-medium text-on-surface-variant">
           已經有帳號了嗎？
-          <a class="text-primary font-bold hover:underline ml-1" href="{{ route('login.view') }}">立即登入</a>
+          <a class="text-primary font-bold hover:underline ml-1" href="{{ route('login') }}">立即登入</a>
         </p>
       </div>
     </div>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Controller;
@@ -11,10 +12,7 @@ use App\Http\Controllers\Esp32Controller;
 use App\Http\Controllers\AdminController;
 
 //login & register
-// Route::get('/login', [AuthController::class, 'loginView'])->name('login')->name('login.view');
-// 將原本的 name('login')->name('login.view') 改為單一清楚的設定
-Route::get('/login', [AuthController::class, 'loginView'])->name('login.view');
-// Route::get('/login', [AuthController::class, 'loginView'])->name('login')->name('login.view');
+Route::get('/login', [AuthController::class, 'loginView'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');//login驗證成功後的動作
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout.submit');
 Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
@@ -71,8 +69,7 @@ Route::get('/api/online-count', function () {
     return response()->json(['count' => count($onlineUsers)]);
 });
 Route::get('/sensors', [Esp32Controller::class, 'getSensorData']);
-Route::post('/pump', [Esp32Controller::class, 'controlPump']);
-Route::post('/feed', [Esp32Controller::class, 'triggerFeeding']);
+// Route::post('/feed', [Esp32Controller::class, 'triggerFeeding']);
 // 允許一般使用者存取的路由
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [AdminController::class, 'index'])->name('user.profile');
@@ -80,7 +77,10 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // 管理員專屬的路由 (保留給更高級的功能)
-Route::middleware(['auth', 'admin'])->group(function () {
+// 修改這裡：放寬 admin 權限檢查，改為在 Controller 內處理，避免 middleware 跳轉
+// 將 /pump 的路由移出嚴格的 admin middleware
+// 只保留 auth 以確保使用者已登入
+Route::middleware(['auth'])->group(function () {
     Route::post('/pump', [Esp32Controller::class, 'controlPump'])->name('pump.control');
 });
 // routes/web.php
@@ -89,3 +89,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 Route::post('/admin/add-money', [\App\Http\Controllers\AdminController::class, 'addMoney'])
     ->name('admin.add_money');
 Route::post('/donate', [AdminController::class, 'donate'])->name('donate.submit');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/api/finance-stats', [FinanceController::class, 'getStats']);
+});

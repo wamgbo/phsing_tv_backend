@@ -9,12 +9,43 @@ class Esp32Controller extends Controller
     private $esp32Url = 'http://123.252.36.37:1067';
     public function controlPump(Request $request)
     {
-        // 將前端傳來的資料轉發給 ESP32
-        $response = Http::asForm()->post($this->esp32Url . '/pump', [
-            'state' => $request->input('state')
-        ]);
+        if (!auth()->check()) {
+            return response()->json(['status' => 'error', 'message' => '尚未登入'], 401);
+        }
 
-        return response()->json($response->json());
+        $user = auth()->user();
+        if ($user->role !== 'admin') {
+            return response()->json(['status' => 'error', 'message' => '權限不足'], 403);
+        }
+
+        try {
+            $response = Http::timeout(5)->asForm()->post($this->esp32Url . '/pump', [
+                'state' => $request->input('state')
+            ]);
+
+            \Log::info('ESP32 pump response', [
+                'url' => $this->esp32Url . '/pump',
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
+
+            if ($response->failed()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'ESP32 無回應或回應錯誤',
+                    'http_status' => $response->status(),
+                ], 502);
+            }
+
+            return response()->json(['status' => 'success', 'data' => $response->json()]);
+
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+            \Log::error('ESP32 連線失敗: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => '無法連線到硬體裝置，請確認 ESP32 是否在線',
+            ], 503);
+        }
     }
 
     public function triggerFeeding(Request $request)

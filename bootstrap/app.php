@@ -15,6 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
         \App\Http\Middleware\TrackOnlineUsers::class,
         \App\Http\Middleware\EnsureUserIsAdmin::class,
         'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+        
+        
     ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

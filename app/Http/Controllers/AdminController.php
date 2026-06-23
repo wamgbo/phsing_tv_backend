@@ -33,7 +33,7 @@ class AdminController extends Controller
     {
         // 手動判斷是否登入
         if (!session()->has('user_id')) {
-            return redirect()->route('login.view')->with('error', '請先登入才能斗內！');
+            return redirect()->route('login')->with('error', '請先登入才能斗內！');
         }
         // 1. 驗證金額
         $request->validate(['amount' => 'required|numeric|min:1']);

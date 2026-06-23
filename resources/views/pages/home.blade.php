@@ -82,7 +82,7 @@
           </form>
         </div>
       @else
-        <a href="{{ route('login.view') }}"
+        <a href="{{ route('login') }}"
           class="bg-primary text-white font-medium px-6 py-2 rounded-full hover:bg-primary-hover transition-all active:scale-95 shadow-sm">
           登入
         </a>

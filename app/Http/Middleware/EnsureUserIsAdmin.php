@@ -15,9 +15,11 @@ class EnsureUserIsAdmin
      */
     public function handle($request, Closure $next)
     {
-        // if (session('user_role') !== 'admin') {
-        //     return redirect('/')->with('error', '您沒有存取權限。');
-        // }
+        // 如果 Session 裡沒資料，紀錄錯誤
+        if (!session()->has('user_id')) {
+            \Log::error('Admin Middleware: Session user_id 不存在，導向登入');
+        }
+
         return $next($request);
     }
 }

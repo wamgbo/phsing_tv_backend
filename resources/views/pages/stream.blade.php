@@ -731,7 +731,7 @@
      */
     // --- 1. 硬體常數定義 ---
     const WATER_RAW_EMPTY = 100;
-    const WATER_RAW_FULL = 2000;
+    const WATER_RAW_FULL = 2500;
     const VREF = 3.3;
     const ADC_RES = 4095;
 

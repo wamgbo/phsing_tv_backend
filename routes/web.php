@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 use App\Models\Message;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Esp32Controller;
 
 //login & register
 Route::get('/login', [AuthController::class, 'loginView'])->name('login.view');//get登入
@@ -58,3 +59,6 @@ Route::post('/api/messages', function (Request $request) {
 
     return response()->json(['status' => 'success']);
 })->name('messages.store');
+Route::get('/sensors', [Esp32Controller::class, 'getSensorData']);
+Route::post('/pump', [Esp32Controller::class, 'controlPump']);
+Route::post('/feed', [Esp32Controller::class, 'triggerFeeding']);

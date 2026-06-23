@@ -513,36 +513,121 @@
     }
     renderMessages();
 
+    /**
+     * 監控系統主程式
+     */
+    /**
+     * 定義數值分級與顏色邏輯
+     */
+    // --- 1. 硬體常數定義 ---
+    const WATER_RAW_EMPTY = 100;
+    const WATER_RAW_FULL = 900;
+    const VREF = 3.3;
+    const ADC_RES = 4095;
+
+    // --- 2. 數據轉換與演算法 ---
+    function processSensorData(data) {
+      let temp = parseFloat(data.temperature - 20);
+
+      // 水位百分比計算
+      let waterRaw = parseFloat(data.water_level_raw);
+      let waterPercent = ((waterRaw - WATER_RAW_EMPTY) / (WATER_RAW_FULL - WATER_RAW_EMPTY)) * 100;
+      waterPercent = Math.max(0, Math.min(100, waterPercent));
+
+      // TDS 溫度補償演算法
+      let voltage = parseFloat(data.tds_raw) * (VREF / ADC_RES);
+      let compensationCoefficient = 1.0 + 0.02 * (temp - 25.0);
+      let compensationVoltage = voltage / compensationCoefficient;
+      let tdsValue = (133.42 * Math.pow(compensationVoltage, 3) - 255.86 * Math.pow(compensationVoltage, 2) + 857.39 * compensationVoltage) * 0.5;
+
+
+      return {
+        temperature: temp,
+        waterLevelPercent: waterPercent,
+        tdsPpm: Math.max(0, Math.round(tdsValue)),
+        pump_status: data.pump_status
+      };
+    }
+
+    // --- 3. 視覺樣式分級邏輯 ---
+    function getStatusConfig(type, value) {
+      if (type === 'temp') {
+        if (value >= 24 && value <= 28) return { color: '#28a745', label: '良好' };
+        if ((value >= 20 && value < 24) || (value > 28 && value <= 30)) return { color: '#ffc107', label: '中等' };
+        return { color: '#dc3545', label: '注意' };
+      }
+      if (type === 'tds') {
+        if (value >= 100 && value <= 400) return { color: '#28a745', label: '良好' };
+        if (value > 400 && value <= 800) return { color: '#ffc107', label: '中等' };
+        return { color: '#dc3545', label: '危險' };
+      }
+      // 新增：水位邏輯
+      if (type === 'water') {
+        if (value >= 80.0) return { color: '#28a745', label: '水量充足' };       // 綠
+        if (value >= 50.0) return { color: '#007bff', label: '正常蒸發' };       // 藍
+        if (value >= 25.0) return { color: '#ffc107', label: '水位偏低' };       // 黃
+        return { color: '#dc3545', label: '需人工補水' };                        // 紅
+      }
+      return { color: '#6c757d', label: '-' };
+    }
+
+    // --- 4. 主更新循環 ---
     async function updateMetrics() {
       try {
-        const response = await fetch('http://123.252.43.228:6769/sensors');
-        if (!response.ok) throw new Error('無法獲取數據');
+        const response = await fetch('/sensors');
+        if (!response.ok) throw new Error('API 連線失敗');
+        const rawData = await response.json();
+        const data = processSensorData(rawData);
 
-        const data = await response.json();
-
-        // 更新數值
+        // UI 渲染：溫度
+        const tempConf = getStatusConfig('temp', data.temperature);
         document.getElementById('tempValue').textContent = data.temperature.toFixed(1);
-        document.getElementById('water_level_raw').textContent = data.water_level_raw;
-        document.getElementById('tdsValue').textContent = data.tds_raw;
+        document.getElementById('tempValue').style.color = tempConf.color;
 
-        // --- 關鍵修改：根據 pump_status 更新「魚缸狀況」 ---
-        const statusElem = document.getElementById('pump_status');
-        statusElem.textContent = data.pump_status === 0 ? '啟動中' : '已關閉';
+
+        // UI 渲染：水位
+        // ... 在 updateMetrics 內
+        // UI 渲染：水位
+        const waterConf = getStatusConfig('water', data.waterLevelPercent);
+
+        // 更新文字顯示
+        document.getElementById('water_level_raw').textContent = data.waterLevelPercent.toFixed(1) + '%';
+        document.getElementById('water_level_raw').style.color = waterConf.color;
+
+        // 如果你有一個 label 顯示水位狀態
+        if (document.getElementById('waterLabel')) {
+          document.getElementById('waterLabel').textContent = waterConf.label;
+          document.getElementById('waterLabel').style.color = waterConf.color;
+        }
 
         // 更新進度條
-        document.getElementById('tempBar').style.width = Math.min((data.temperature / 100) * 100, 100) + '%';
-        // 請確認您的 HTML 是否有這兩個 ID，若無請補上
-        if (document.getElementById('phBar')) document.getElementById('phBar').style.width = Math.min((data.water_level_raw / 1024) * 100, 100) + '%';
-        if (document.getElementById('tdsBar')) document.getElementById('tdsBar').style.width = Math.min((data.tds_raw / 1024) * 100, 100) + '%';
+        const phBar = document.getElementById('waterLabel'); // 假設這是你的水位條
+        if (phBar) {
+          phBar.style.width = data.waterLevelPercent + '%';
+          phBar.style.backgroundColor = waterConf.color; // 直接使用分級後的顏色
+        }
 
-        // 更新觀看人數
-        document.getElementById('viewerCount').textContent = Math.floor(Math.random() * 50) + 130;
+        // UI 渲染：TDS
+        const tdsConf = getStatusConfig('tds', data.tdsPpm);
+        document.getElementById('tdsValue').textContent = data.tdsPpm;
+        document.getElementById('tdsValue').style.color = tdsConf.color;
+
+        // 泵浦狀態
+        const statusElem = document.getElementById('pump_status');
+        if (statusElem) {
+          statusElem.textContent = data.pump_status === 0 ? '啟動中' : '已關閉';
+          statusElem.style.color = data.pump_status === 0 ? 'green' : 'black';
+        }
 
       } catch (error) {
         console.error('更新失敗:', error);
-        document.getElementById('pump_status').textContent = '離線';
       }
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setInterval(updateMetrics, 3000);
+      updateMetrics();
+    });
 
     function copyLink() {
       const url = window.location.href;

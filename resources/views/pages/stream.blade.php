@@ -202,10 +202,18 @@
           <a href='/'
             class="text-on-surface-variant font-medium hover:text-primary transition-colors px-3 py-1 rounded cursor-pointer">首頁</a>
         </nav>
+        <nav class="hidden md:flex gap-6">
+          <a href='/manage'
+            class="text-on-surface-variant font-medium hover:text-primary transition-colors px-3 py-1 rounded cursor-pointer">管理</a>
+        </nav>
       </div>
       @if(session('user_id'))
+        @php
+          // 這行可以幫助您偵錯，看看 session 裡面到底有沒有東西
+          dd(session()->all()); 
+        @endphp
         <div class="flex items-center gap-4 bg-surface-container-highest px-4 py-2.5 rounded-lg border
-                                                      border-outline-variant/30">
+                                                          border-outline-variant/30">
           <div class="flex items-center gap-2 flex-1">
             <span class="material-symbols-outlined text-on-surface-variant text-[20px]">account_circle</span>
             <span class="text-on-surface font-medium text-sm">嗨, {{session('user_name')}}</span>
@@ -226,7 +234,7 @@
         </div>
       @else
         <a href="{{ route('login') }}" class="bg-primary text-white font-medium px-6 py-2 rounded-full hover:bg-primary-hover transition-all
-                                                  active:scale-95 shadow-sm">
+                                                      active:scale-95 shadow-sm">
           登入
         </a>
       @endif
@@ -280,16 +288,14 @@
           <div class="flex flex-wrap items-center gap-3 shrink-0">
 
             <div class="flex flex-wrap items-center gap-3 shrink-0">
-              @if(session('user_id') && \App\Models\User::find(session('user_id'))?->role === 'admin')
-                <div class="bg-red-50 p-2 rounded-lg border border-red-200">
-                  <div class="dashboard">
-                    <button type="button" onclick="handlePump(1, this)"
-                      class="bg-red-500 text-white px-4 py-2 rounded transition-all">啟動幫浦</button>
-                    <button type="button" onclick="handlePump(0, this)"
-                      class="bg-gray-500 text-white px-4 py-2 rounded transition-all">關閉幫浦</button>
-                  </div>
+              <div class="bg-red-50 p-2 rounded-lg border border-red-200">
+                <div class="dashboard">
+                  <button type="button" onclick="handlePump(1, this)"
+                    class="bg-red-500 text-white px-4 py-2 rounded transition-all">啟動幫浦</button>
+                  <button type="button" onclick="handlePump(0, this)"
+                    class="bg-gray-500 text-white px-4 py-2 rounded transition-all">關閉幫浦</button>
                 </div>
-              @endif
+              </div>
             </div>
 
             <button

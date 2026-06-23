@@ -69,6 +69,10 @@
           <a href='/'
             class="text-on-surface-variant font-medium hover:text-primary transition-colors px-3 py-1 rounded cursor-pointer">首頁</a>
         </nav>
+        <nav class="hidden md:flex gap-6">
+          <a href='/manage'
+            class="text-on-surface-variant font-medium hover:text-primary transition-colors px-3 py-1 rounded cursor-pointer">管理</a>
+        </nav>
       </div>
       @if(session('user_id'))
         <div class="flex items-center gap-4 bg-surface-container-highest px-4 py-2.5 rounded-lg border border-outline-variant/30">

@@ -59,6 +59,11 @@ Route::post('/api/messages', function (Request $request) {
 
     return response()->json(['status' => 'success']);
 })->name('messages.store');
+Route::get('/api/online-count', function () {
+    // 透過 Redis 的 keys 掃描所有以 user-is-online 開頭的 key
+    $onlineUsers = Redis::keys('laravel_database_user-is-online-*');
+    return response()->json(['count' => count($onlineUsers)]);
+});
 Route::get('/sensors', [Esp32Controller::class, 'getSensorData']);
 Route::post('/pump', [Esp32Controller::class, 'controlPump']);
 Route::post('/feed', [Esp32Controller::class, 'triggerFeeding']);

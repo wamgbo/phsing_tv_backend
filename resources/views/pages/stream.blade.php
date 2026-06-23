@@ -232,10 +232,11 @@
 
         <!-- Video Section -->
         <div class="relative aspect-video bg-inverse-surface rounded-xl overflow-hidden shadow-sm group">
-          <video id="videoPlayer" class="w-full h-full object-cover bg-black" controls>
-            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-            您的瀏覽器不支援影片播放。
-          </video>
+          <div class="video-container" style="width: 800px; height: 460px; overflow: hidden; position: relative;">
+           <iframe width="780" height="460" src="https://www.youtube.com/embed/LRiIKBkm1N4?si=GiLVlmDjMpDqAlCL" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> 
+            <!-- <img id="cameraFeed" src="http://123.252.36.37:8990/cam.mjpeg" alt="Live Camera Feed"
+              class="w-full h-full object-cover"> -->
+          </div>
 
           <!-- Live Indicators -->
           <div class="absolute top-4 left-4 flex items-center gap-2 pointer-events-none">
@@ -276,6 +277,11 @@
             <!-- Minimal User Effort: Share button -->
             <button
               class="flex items-center gap-2 bg-surface-container-low text-on-surface px-4 py-2.5 rounded-lg font-semibold text-sm transition-colors hover:bg-surface-container shadow-sm border border-outline-variant/20 h-fit"
+              onclick="report()">
+              <span class="material-symbols-outlined text-[20px]">report</span> 檢舉
+            </button>
+            <button
+              class="flex items-center gap-2 bg-surface-container-low text-on-surface px-4 py-2.5 rounded-lg font-semibold text-sm transition-colors hover:bg-surface-container shadow-sm border border-outline-variant/20 h-fit"
               onclick="copyLink()">
               <span class="material-symbols-outlined text-[20px]">share</span> 分享
             </button>
@@ -284,7 +290,7 @@
         <div class="card">
 
           <div class="toggle-row">
-            <span class="row-label">自動餵食</span>
+            <span class="row-label">餵食</span>
             <div class="toggle-container active" data-name="自動餵食" onclick="toggleState(this)" tabindex="0" role="switch"
               aria-checked="true"
               onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleState(this);}">
@@ -629,6 +635,9 @@
       updateMetrics();
     });
 
+    function report() {
+      window.location.href = 'https://forms.gle/4L9EUnFTG9UQpCA28';
+    }
     function copyLink() {
       const url = window.location.href;
       navigator.clipboard.writeText(url).then(() => {

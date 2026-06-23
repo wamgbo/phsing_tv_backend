@@ -16,57 +16,52 @@ class AuthController extends Controller
             'username' => ['required'],
             'password' => ['required'],
         ]);
-        // 2. 手動從資料庫抓出對應的 Post (User)
-        $post = \App\Models\Post::where('username', $credentials['username'])->first();
 
-        // 3. 檢查帳號是否存在，並手動比對 Hash 密碼
-        if ($post && \Hash::check($credentials['password'], $post->password)) {
+        // 用拼湊出來的 email 去資料庫比對
+        $email = $credentials['username'] . '@temp.com';
+        $user = \App\Models\User::where('email', $email)->first();
 
-            // --- 驗證成功後的動作 ---
+        if ($user && \Hash::check($credentials['password'], $user->password)) {
+            session([
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'user_role' => $user->role,
+            ]);
 
-            // 手動把使用者資訊存入 Session (這就是登入的核心)
-            session(['user_id' => $post->id]);
-            session(['user_name' => $post->username]);
-
-            // 重新產生 Session ID 防止攻擊
             $request->session()->regenerate();
-
             return redirect()->intended('/')->with('success', '登入成功！');
         }
 
-        // 3. 失敗回傳錯誤
-        return back()->withErrors([
-            'username' => '帳號或密碼錯誤。',
-        ]);
+        return back()->withErrors(['username' => '帳號或密碼錯誤。']);
     }
 
-    //register
+    // 註冊方法
     public function register(Request $request)
     {
-        // 1. 驗證資料
+        // 1. 驗證只留帳號與密碼
         $validatedData = $request->validate([
-            'username' => 'required|unique:posts,username',
+            'username' => 'required|string|unique:users,email', // 檢查帳號是否重複
             'password' => 'required|min:6|confirmed',
         ]);
 
-        // 2. !! 重要 !! 必須手動加密密碼
-        // 如果不加密，資料庫會存明文，Hash::check 會永遠失敗
-        $user = Post::create([
-            'username' => $validatedData['username'],
+        // 2. 建立使用者
+        // 因為資料庫強制要求 email 欄位，我們手動用帳號拼湊一個假 email
+        $user = \App\Models\User::create([
+            'name' => $validatedData['username'], // 把帳號當作名稱
+            'email' => $validatedData['username'] . '@temp.com', // 偽造一個 email 來滿足資料庫
             'password' => Hash::make($validatedData['password']),
+            'role' => 'user',
         ]);
 
-        // 3. !! 重要 !! 為了配合你首頁導覽列的判斷邏輯
-        // 你必須手動寫入 Session，否則首頁會顯示「請登入」
+        // 3. 寫入 Session (請記得補上 role)
         session([
-            'user_id'   => $user->id,
-            'user_name' => $user->username,
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+            'user_role' => $user->role,
         ]);
 
         $request->session()->regenerate();
 
-        // 4. !! 重要 !! 改用 redirect 轉發
-        // return view 只是把畫面渲染出來，網址不會變，且容易造成重複提交 (F5 重新整理)
         return redirect()->route('home')->with('success', '註冊成功！');
     }
     //return view

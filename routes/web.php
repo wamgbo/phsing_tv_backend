@@ -4,12 +4,17 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Redis;
 use App\Models\Message;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Esp32Controller;
+use App\Http\Controllers\AdminController;
 
 //login & register
-Route::get('/login', [AuthController::class, 'loginView'])->name('login.view');//get登入
+// Route::get('/login', [AuthController::class, 'loginView'])->name('login')->name('login.view');
+// 將原本的 name('login')->name('login.view') 改為單一清楚的設定
+Route::get('/login', [AuthController::class, 'loginView'])->name('login.view');
+// Route::get('/login', [AuthController::class, 'loginView'])->name('login')->name('login.view');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');//login驗證成功後的動作
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout.submit');
 Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
@@ -60,10 +65,27 @@ Route::post('/api/messages', function (Request $request) {
     return response()->json(['status' => 'success']);
 })->name('messages.store');
 Route::get('/api/online-count', function () {
-    // 透過 Redis 的 keys 掃描所有以 user-is-online 開頭的 key
-    $onlineUsers = Redis::keys('laravel_database_user-is-online-*');
+    // 查詢以 'online:' 開頭的所有 Key
+    $onlineUsers = \Illuminate\Support\Facades\Redis::command('keys', ['online:*']);
+
     return response()->json(['count' => count($onlineUsers)]);
 });
 Route::get('/sensors', [Esp32Controller::class, 'getSensorData']);
 Route::post('/pump', [Esp32Controller::class, 'controlPump']);
 Route::post('/feed', [Esp32Controller::class, 'triggerFeeding']);
+// 允許一般使用者存取的路由
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [AdminController::class, 'index'])->name('user.profile');
+    Route::post('/profile/add-money', [AdminController::class, 'addMoney'])->name('user.add_money');
+});
+
+// 管理員專屬的路由 (保留給更高級的功能)
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::post('/pump', [Esp32Controller::class, 'controlPump'])->name('pump.control');
+});
+// routes/web.php
+
+// 確保這行存在，且 name 是 'admin.add_money'
+Route::post('/admin/add-money', [\App\Http\Controllers\AdminController::class, 'addMoney'])
+    ->name('admin.add_money');
+Route::post('/donate', [AdminController::class, 'donate'])->name('donate.submit');

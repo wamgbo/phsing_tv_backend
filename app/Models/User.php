@@ -30,7 +30,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             // 2. 新增 tags 型別轉換：寫入資料庫是 JSON 字串，讀取出來會自動變成 PHP Array
-            'tags' => 'array', 
+            'tags' => 'array',
         ];
     }
 
@@ -40,7 +40,7 @@ class User extends Authenticatable
     public function followings(): BelongsToMany
     {
         return $this->belongsToMany(
-            User::class, 
+            User::class,
             'user_follows',  // 中介表名稱
             'follower_id',   // 自己在中介表的外鍵
             'following_id'   // 對方在中介表的外鍵
@@ -53,10 +53,14 @@ class User extends Authenticatable
     public function followers(): BelongsToMany
     {
         return $this->belongsToMany(
-            User::class, 
-            'user_follows', 
+            User::class,
+            'user_follows',
             'following_id',  // 注意：這裡的外鍵位置要與上面對調
             'follower_id'
         )->withTimestamps();
+    }
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
     }
 }

@@ -202,10 +202,15 @@
       </div>
       @if(session('user_id'))
         <div class="flex items-center gap-4 bg-surface-container-highest px-4 py-2.5 rounded-lg border
-            border-outline-variant/30">
+                        border-outline-variant/30">
           <div class="flex items-center gap-2 flex-1">
             <span class="material-symbols-outlined text-on-surface-variant text-[20px]">account_circle</span>
             <span class="text-on-surface font-medium text-sm">嗨, {{session('user_name')}}</span>
+          </div>
+          <div class="flex items-center gap-4 px-4">
+            <span class="text-sm font-bold text-primary">餘額:
+              ${{ number_format(\App\Models\User::find(session('user_id'))?->balance ?? 0, 0) }}</span>
+            <!-- <a href="/profile" class="text-sm text-on-surface hover:text-primary">帳戶中心</a> -->
           </div>
           <div class="w-[1px] h-4 bg-outline-variant/50 mx-1"></div>
           <form action="{{ route('logout.submit') }}" method="POST">
@@ -218,7 +223,7 @@
         </div>
       @else
         <a href="{{ route('login.view') }}" class="bg-primary text-white font-medium px-6 py-2 rounded-full hover:bg-primary-hover transition-all
-        active:scale-95 shadow-sm">
+                    active:scale-95 shadow-sm">
           登入
         </a>
       @endif
@@ -239,8 +244,6 @@
               title="YouTube video player" frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-            <!-- <img id="cameraFeed" src="http://123.252.36.37:8990/cam.mjpeg" alt="Live Camera Feed"
-              class="w-full h-full object-cover"> -->
           </div>
 
           <!-- Live Indicators -->
@@ -295,7 +298,6 @@
 
 
 
-        </script>
         <!-- [UPDATE: User Experience & Content Awareness] Creator Profile & Bio Area -->
         <div
           class="bg-surface-container-lowest p-5 md:p-6 rounded-xl border border-outline-variant/20 shadow-sm flex flex-col sm:flex-row gap-5 items-start relative mt-2">
@@ -352,104 +354,128 @@
           </span>
         </div>
 
-        <!-- Messages List -->
-        <div id="messagesList" class="flex-grow overflow-y-auto p-4 space-y-3 bg-surface/50">
-          <!-- Messages will be dynamically added here -->
-        </div>
+        <div id="messagesList" class="flex-grow overflow-y-auto p-4 space-y-3 bg-surface/50"></div>
 
-        <!-- Input Area -->
-        <div class="p-4 bg-surface-container-lowest border-t border-outline-variant/20">
-          <div class="relative">
-            <textarea id="observationInput"
-              class="w-full bg-surface-container-low border border-outline-variant/30 rounded-lg text-sm p-3 pr-12 focus:ring-2 focus:ring-primary/40 focus:border-primary resize-none h-16 placeholder:text-outline-variant shadow-inner transition-all outline-none"
-              placeholder="跟大家聊聊天吧..."></textarea>
-            <button id="sendBtn"
-              class="absolute right-2 bottom-2 p-1.5 bg-primary text-white rounded-md flex items-center justify-center hover:bg-primary-hover active:scale-95 transition-all shadow-sm">
-              <span class="material-symbols-outlined text-[18px]">send</span>
-            </button>
+        <div class="bg-surface-container-lowest border-t border-outline-variant/20">
+
+          <div class="px-4 pt-3 pb-1">
+            <form action="{{ route('donate.submit') }}" method="POST" class="flex gap-2">
+              @csrf
+              <input type="number" name="amount" placeholder="贊助金額" required
+                class="flex-1 bg-surface-container-low border border-outline-variant/30 rounded-lg text-sm p-2 outline-none focus:border-rose-400">
+              <button type="submit"
+                class="bg-rose-500 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-rose-600 transition-all shadow-sm">
+                斗內
+              </button>
+            </form>
+          </div>
+
+          <div class="p-4 relative">
+            <div class="relative">
+              <textarea id="observationInput"
+                class="w-full bg-surface-container-low border border-outline-variant/30 rounded-lg text-sm p-3 pr-12 focus:ring-2 focus:ring-primary/40 focus:border-primary resize-none h-16 placeholder:text-outline-variant shadow-inner transition-all outline-none"
+                placeholder="跟大家聊聊天吧..."></textarea>
+              <button id="sendBtn"
+                class="absolute right-2 bottom-2 p-1.5 bg-primary text-white rounded-md flex items-center justify-center hover:bg-primary-hover active:scale-95 transition-all shadow-sm">
+                <span class="material-symbols-outlined text-[18px]">send</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Metric Bento Grid -->
-    <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-      <div
-        class="bg-surface-container-lowest p-6 rounded-xl flex flex-col justify-between border border-outline-variant/20 shadow-sm hover:shadow-md transition-shadow">
-        <span
-          class="text-xs font-bold font-label uppercase tracking-widest text-on-surface-variant flex items-center gap-1 mb-2">
-          <span class="material-symbols-outlined text-[16px]">device_thermostat</span> 溫度
-        </span>
-        <div class="flex items-baseline gap-2">
-          <span id="tempValue" class="text-4xl font-extrabold text-on-surface">26.5</span>
-          <span class="text-lg font-bold text-primary">°C</span>
+      <!-- Metric Bento Grid -->
+      <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <div
+          class="bg-surface-container-lowest p-6 rounded-xl flex flex-col justify-between border border-outline-variant/20 shadow-sm hover:shadow-md transition-shadow">
+          <span
+            class="text-xs font-bold font-label uppercase tracking-widest text-on-surface-variant flex items-center gap-1 mb-2">
+            <span class="material-symbols-outlined text-[16px]">device_thermostat</span> 溫度
+          </span>
+          <div class="flex items-baseline gap-2">
+            <span id="tempValue" class="text-4xl font-extrabold text-on-surface">26.5</span>
+            <span class="text-lg font-bold text-primary">°C</span>
+          </div>
+          <div class="w-full bg-surface-container-highest h-2 rounded-full mt-3 overflow-hidden">
+            <div id="tempBar" class="bg-primary h-full w-[85%] transition-all duration-500 ease-out"></div>
+          </div>
         </div>
-        <div class="w-full bg-surface-container-highest h-2 rounded-full mt-3 overflow-hidden">
-          <div id="tempBar" class="bg-primary h-full w-[85%] transition-all duration-500 ease-out"></div>
-        </div>
-      </div>
 
-      <div
-        class="bg-surface-container-lowest p-6 rounded-xl flex flex-col justify-between border border-outline-variant/20 shadow-sm hover:shadow-md transition-shadow">
-        <span
-          class="text-xs font-bold font-label uppercase tracking-widest text-on-surface-variant flex items-center gap-1 mb-2">
-          <span class="material-symbols-outlined text-[16px]">water_drop</span> 水位
-        </span>
-        <div class="flex items-baseline gap-2">
-          <span id="water_level_raw" class="text-4xl font-extrabold text-on-surface">6.8</span>
-          <span class="text-lg font-bold text-secondary">%</span>
+        <div
+          class="bg-surface-container-lowest p-6 rounded-xl flex flex-col justify-between border border-outline-variant/20 shadow-sm hover:shadow-md transition-shadow">
+          <span
+            class="text-xs font-bold font-label uppercase tracking-widest text-on-surface-variant flex items-center gap-1 mb-2">
+            <span class="material-symbols-outlined text-[16px]">water_drop</span> 水位
+          </span>
+          <div class="flex items-baseline gap-2">
+            <span id="water_level_raw" class="text-4xl font-extrabold text-on-surface">6.8</span>
+            <span class="text-lg font-bold text-secondary">%</span>
+          </div>
+          <div class="w-full bg-surface-container-highest h-2 rounded-full mt-3 overflow-hidden">
+            <div id="phBar" class="bg-secondary h-full w-[60%] transition-all duration-500 ease-out"></div>
+          </div>
         </div>
-        <div class="w-full bg-surface-container-highest h-2 rounded-full mt-3 overflow-hidden">
-          <div id="phBar" class="bg-secondary h-full w-[60%] transition-all duration-500 ease-out"></div>
-        </div>
-      </div>
 
-      <div
-        class="bg-surface-container-lowest p-6 rounded-xl flex flex-col justify-between border border-outline-variant/20 shadow-sm hover:shadow-md transition-shadow">
-        <span
-          class="text-xs font-bold font-label uppercase tracking-widest text-on-surface-variant flex items-center gap-1 mb-2">
-          <span class="material-symbols-outlined text-[16px]">blur_on</span> 總溶解固體
-        </span>
-        <div class="flex items-baseline gap-2">
-          <span id="tdsValue" class="text-4xl font-extrabold text-on-surface">12</span>
-          <span class="text-lg font-bold text-tertiary">ppm</span>
+        <div
+          class="bg-surface-container-lowest p-6 rounded-xl flex flex-col justify-between border border-outline-variant/20 shadow-sm hover:shadow-md transition-shadow">
+          <span
+            class="text-xs font-bold font-label uppercase tracking-widest text-on-surface-variant flex items-center gap-1 mb-2">
+            <span class="material-symbols-outlined text-[16px]">blur_on</span> 總溶解固體
+          </span>
+          <div class="flex items-baseline gap-2">
+            <span id="tdsValue" class="text-4xl font-extrabold text-on-surface">12</span>
+            <span class="text-lg font-bold text-tertiary">ppm</span>
+          </div>
+          <div class="w-full bg-surface-container-highest h-2 rounded-full mt-3 overflow-hidden">
+            <div id="tdsBar" class="bg-tertiary h-full w-[40%] transition-all duration-500 ease-out"></div>
+          </div>
         </div>
-        <div class="w-full bg-surface-container-highest h-2 rounded-full mt-3 overflow-hidden">
-          <div id="tdsBar" class="bg-tertiary h-full w-[40%] transition-all duration-500 ease-out"></div>
-        </div>
-      </div>
 
-      <div class="bg-primary-container p-6 rounded-xl flex flex-col justify-between shadow-sm relative overflow-hidden">
-        <div class="absolute -right-4 -bottom-4 opacity-10">
-          <span class="material-symbols-outlined text-[120px]">health_and_safety</span>
-        </div>
-        <span
-          class="text-xs font-bold font-label uppercase tracking-widest text-on-primary-container flex items-center gap-1 mb-2 relative z-10">
-          <span class="material-symbols-outlined text-[16px]">monitoring</span> 幫浦狀況
-        </span>
-        <div class="flex items-baseline gap-2 relative z-10">
-          <span id="pump_status" class="text-4xl font-extrabold text-on-primary-container">良好</span>
+        <div
+          class="bg-primary-container p-6 rounded-xl flex flex-col justify-between shadow-sm relative overflow-hidden">
+          <div class="absolute -right-4 -bottom-4 opacity-10">
+            <span class="material-symbols-outlined text-[120px]">health_and_safety</span>
+          </div>
+          <span
+            class="text-xs font-bold font-label uppercase tracking-widest text-on-primary-container flex items-center gap-1 mb-2 relative z-10">
+            <span class="material-symbols-outlined text-[16px]">monitoring</span> 幫浦狀況
+          </span>
+          <div class="flex items-baseline gap-2 relative z-10">
+            <span id="pump_status" class="text-4xl font-extrabold text-on-primary-container">良好</span>
+          </div>
         </div>
       </div>
-    </div>
   </main>
 
   <!-- [LAYOUT] Bottom Status Bar -->
 
   <script>
     function updateViewerCount() {
+      // 使用 fetch 獲取數據
       fetch('/api/online-count')
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('viewerCount').innerText = data.count;
+        .then(response => {
+          if (!response.ok) throw new Error('伺服器回應異常');
+          return response.json();
         })
-        .catch(err => console.error('無法取得在線人數:', err));
+        .then(data => {
+          const element = document.getElementById('viewerCount');
+          if (element) {
+            // 更新數字
+            element.innerText = data.count;
+            console.log('當前在線人數:', data.count);
+          }
+        })
+        .catch(err => {
+          console.error('更新在線人數失敗:', err);
+          // 失敗時可選：將顯示變更為錯誤提示或保持不動
+        });
     }
 
-    // 頁面載入後立即執行一次
-    updateViewerCount();
+    // 1. 頁面載入後立即執行一次
+    document.addEventListener('DOMContentLoaded', updateViewerCount);
 
-    // 每 5 秒自動更新一次
+    // 2. 每 5 秒自動更新一次
     setInterval(updateViewerCount, 5000);
     // ----- Demo Data (When not connected to backend) -----
     let messages = [
@@ -514,7 +540,7 @@
      */
     // --- 1. 硬體常數定義 ---
     const WATER_RAW_EMPTY = 100;
-    const WATER_RAW_FULL = 900;
+    const WATER_RAW_FULL = 2000;
     const VREF = 3.3;
     const ADC_RES = 4095;
 

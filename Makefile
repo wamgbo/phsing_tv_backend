@@ -1,5 +1,7 @@
 .PHONY: up down reverb reverb-stop logs fresh
 
+setAdmin:
+    ./vendor/bin/sail artisan set:admin
 # ---------------------------------------------------------------------------
 # 完整初始化流程：複製 .env、安裝套件、啟動容器、產生 key、跑 migration、啟動 reverb
 # ---------------------------------------------------------------------------

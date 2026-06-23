@@ -191,22 +191,6 @@
   </main>
 
   <!-- [LAYOUT] Bottom Status Bar -->
-  <footer class="fixed bottom-0 w-full bg-white border-t border-outline-variant px-6 py-2 flex justify-between items-center z-40 text-xs font-medium text-on-surface-variant shadow-[0_-2px_10px_rgba(0,0,0,0.02)]">
-      <div class="flex items-center gap-4">
-          <div class="flex items-center gap-1.5">
-              <span class="flex h-2.5 w-2.5 relative">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
-              </span>
-              <span>系統狀態: 正常連線中</span>
-          </div>
-          <span class="hidden sm:inline border-l border-outline-variant pl-4">線上使用者: 306 位</span>
-      </div>
-      <div class="flex gap-4">
-          <a href="#" class="hover:text-primary transition-colors">關於我們</a>
-          <a href="#" class="hover:text-primary transition-colors">服務條款</a>
-      </div>
-  </footer>
 
   <script>
     const btn = document.getElementById('submit-btn');

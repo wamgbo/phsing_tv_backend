@@ -287,16 +287,6 @@
 
           <div class="flex flex-wrap items-center gap-3 shrink-0">
 
-            <div class="flex flex-wrap items-center gap-3 shrink-0">
-              <div class="bg-red-50 p-2 rounded-lg border border-red-200">
-                <div class="dashboard">
-                  <button type="button" onclick="handlePump(1, this)"
-                    class="bg-red-500 text-white px-4 py-2 rounded transition-all">啟動幫浦</button>
-                  <button type="button" onclick="handlePump(0, this)"
-                    class="bg-gray-500 text-white px-4 py-2 rounded transition-all">關閉幫浦</button>
-                </div>
-              </div>
-            </div>
 
             <button
               class="flex items-center gap-2 bg-surface-container-low text-on-surface px-4 py-2.5 rounded-lg font-semibold text-sm transition-colors hover:bg-surface-container shadow-sm border border-outline-variant/20 h-fit"
